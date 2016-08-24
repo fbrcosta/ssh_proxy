@@ -9,6 +9,24 @@ class SSHProxy(object):
         self.password = password
         self.timeout = timeout
 
+        self.connect()
+
+    def connect(self):
+        self.session = pexpect.spawn('ssh ' + self.username + '@' + self.address)
+        match_index = self.session.expect(['(P|p)assword:', '(\$|\#):'], timeout=10)
+
+        if match_index == 0:
+            self.session.sendline (self.password + '\r')
+
+        match_index = self.session.expect('(\$|\#)', timeout=10)
+
+        print(match_index)
+
+        self.session.sendline ('uname -a\r')
+        match_index = self.session.expect('(\$|\#)', timeout=10)
+        print (self.session.before)
+
+
     def read_until(self, regex, timeout=30):
         pass
 
